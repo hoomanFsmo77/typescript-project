@@ -1,5 +1,7 @@
-import {ITodo} from "./Todo";
+import {ITodo,todoLists} from "./Todo";
 import {storage} from "./Storage";
+import it from "node:test";
+
 
 
 function ShowInitialTodos(prop:any) {
@@ -7,13 +9,12 @@ function ShowInitialTodos(prop:any) {
     ui.showTodo(storage.getItem)
 }
 
-
-
-
 @ShowInitialTodos
 class UI {
     public todoContainer=document.querySelector('#todo-list')!;
+    constructor() {
 
+    }
     showTodo(data:ITodo[]){
         // @ts-ignore
         this.todoContainer?.innerHTML=''
@@ -21,16 +22,53 @@ class UI {
             return `<tr>
                         <th scope="row">${item.id}</th>
                         <td>${item.value}</td>
-                        <td><input type="checkbox"  class="form-check-input"></td>
+                        <td><input type="checkbox" id="check"  data-status="${item.status ? 1 : 0}" data-id="${item.id}"  class="form-check-input"></td>
                         <td>
-                            <button class="btn btn-sm btn-outline-danger">delete</button>
+                            <button data-id="${item.id}" class="btn btn-sm btn-outline-danger">delete</button>
                         </td>
                     </tr>`
         }).join('');
         this.todoContainer?.insertAdjacentHTML('beforeend',target)
-    }
+        document.querySelectorAll('#check').forEach((item:any,index:number)=>{
+            if(data[index].status){
+                item.setAttribute('checked','')
+            }else{
+                item.removeAttribute('checked')
+            }
+        })
 
+    }
+    todoListEvents=(e:any)=>{
+        if(e.target.classList.contains('btn-outline-danger')){
+            this.removeTodo(e)
+        }else if(e.target.classList.contains('form-check-input')){
+            this.changeStatus(e)
+        }
+    }
+    removeFromStorage(id:number){
+        let targetIndex=todoLists.findIndex(item=>item.id===Number(id))
+        if(targetIndex>-1){
+            todoLists.splice(targetIndex,1)
+            storage.setItem(todoLists)
+        }
+
+    }
+    removeTodo=(e:any)=>{
+        this.removeFromStorage(e.target.dataset.id)
+        e.target.parentElement.parentElement.remove()
+    }
+    changeStatus=(e:any)=>{
+        let index=todoLists.findIndex(item=>item.id===Number(e.target.dataset.id))
+        if(e.target.dataset.status==='1'){
+            todoLists[index].status=false
+            e.target.dataset.status='0'
+        }else{
+            todoLists[index].status=true
+            e.target.dataset.status='1'
+        }
+        storage.setItem(todoLists)
+    }
 }
 let ui=new UI()
-
+document.querySelector('#todo-list')?.addEventListener('click',ui.todoListEvents)
 export {ui}
