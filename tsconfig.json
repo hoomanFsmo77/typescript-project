@@ -3,7 +3,7 @@
     "experimentalDecorators": true,
     "strict": true,
     "target": "ES5",
-    "module": "ES2015",
+    "module": "AMD",
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,

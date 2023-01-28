@@ -1,6 +1,6 @@
 import {ITodo,todoLists} from "./Todo";
 import {storage} from "./Storage";
-import it from "node:test";
+import Swal from "sweetalert2";
 
 
 
@@ -56,8 +56,26 @@ class UI {
     removeTodo=(e:any)=>{
         this.removeFromStorage(e.target.dataset.id)
         e.target.parentElement.parentElement.remove()
+        Swal.fire({
+            title: "Todo removed!",
+            icon: "error",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000,
+            toast: true,
+            position: 'top',
+        })
     }
     changeStatus=(e:any)=>{
+        Swal.fire({
+            title: "Todo updated",
+            icon: "info",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000,
+            toast: true,
+            position: 'top',
+        })
         let index=todoLists.findIndex(item=>item.id===Number(e.target.dataset.id))
         if(e.target.dataset.status==='1'){
             todoLists[index].status=false
